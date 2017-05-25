@@ -1,11 +1,13 @@
 
 package tetrismvclone;
 
+import tetrismvclone.blocks.Block;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import tetrismvclone.blocks.BlockPart;
 
 public class View extends JPanel{
     
@@ -35,7 +37,7 @@ public class View extends JPanel{
     public int[][] field;
     
     // Block
-    
+    public Block currentBlock;
             
     public void View(JFrame frame, int calcRows, int drawRows, int calcCols)
     {
@@ -63,17 +65,20 @@ public class View extends JPanel{
             for (int x = 0; x < drawCols; x++) {
                 if(field[y][x] != 0) // if not transparent at position
                 {
-                    DrawSquare(g, x, y, field[y][x]);
+                    DrawSquare(g, x, y, colours[field[y][x]]);
                 }
             }
         }
         
         // Draw falling block
+        for (BlockPart part : currentBlock.parts) {
+            DrawSquare(g, part.x, part.y, currentBlock.color);
+        }
     }
     
-    private void DrawSquare(Graphics g, int x, int y, int color)
+    private void DrawSquare(Graphics g, int x, int y, Color color)
     {
-        g.setColor(colours[color]);
+        g.setColor(color);
         g.fillRect(x*squareSize, y*squareSize, squareSize, squareSize);
     }
     
