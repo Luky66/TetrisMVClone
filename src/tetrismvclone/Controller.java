@@ -21,6 +21,7 @@ public class Controller {
         
         // Set variables from model to view
         view.field = model.field; // set the starting field
+        view.currentBlock = model.currentBlock;
         
         // Initiate frame
         JFrame frame = new JFrame("Tetris 4 Dummies");

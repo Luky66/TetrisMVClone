@@ -1,13 +1,16 @@
 
 package tetrismvclone;
 
-import tetrismvclone.blocks.Block;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import tetrismvclone.blocks.Block;
 import tetrismvclone.blocks.BlockPart;
+import tetrismvclone.blocks.Blocks;
 
 public class View extends JPanel{
     
@@ -20,18 +23,6 @@ public class View extends JPanel{
     
     // Colours
     Color backgroundColor = Color.white;
-    static final Color[] colours = 
-    {
-        Color.white,
-        Color.black,
-        Color.cyan,
-        Color.blue,
-        Color.orange,
-        Color.yellow,
-        Color.green,
-        Color.magenta,
-        Color.red
-    };
     
     // Field
     public int[][] field;
@@ -65,14 +56,14 @@ public class View extends JPanel{
             for (int x = 0; x < drawCols; x++) {
                 if(field[y][x] != 0) // if not transparent at position
                 {
-                    DrawSquare(g, x, y, colours[field[y][x]]);
+                    DrawSquare(g, x, y, Blocks.colors[field[y][x]]);
                 }
             }
         }
         
         // Draw falling block
         for (BlockPart part : currentBlock.parts) {
-            DrawSquare(g, part.x, part.y, currentBlock.color);
+            DrawSquare(g, part.x+currentBlock.xOffset, part.y+currentBlock.yOffset, currentBlock.color);
         }
     }
     
