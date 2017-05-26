@@ -3,7 +3,10 @@
 
 package tetrismvclone;
 
+import java.util.Arrays;
 import tetrismvclone.blocks.Block;
+import tetrismvclone.blocks.BlockPart;
+import tetrismvclone.blocks.Blocks;
 
 public class Model {
     
@@ -37,13 +40,49 @@ public class Model {
     public Model()
     {
         currentBlock = new Block();
-        currentBlock.xOffset = 4;
-        currentBlock.yOffset = 5;
+        nextBlock = new Block();
     }
     
+    public void ChangeBlock()
+    {
+        System.out.println("Collision detected");
+        // Set the field
+        AddToField(currentBlock);
+        
+        // Set the blocks
+        currentBlock = nextBlock;
+        nextBlock = new Block();
+    }
+    
+    public void Gravity()
+    {
+        currentBlock.yOffset++; // lowers the current block by 1
+    }
     
     // Collisions
-    
+    public void CheckForCollision()
+    {
+        // Field
+        // Border
+        for (BlockPart part : currentBlock.parts) 
+        {
+            if(part.y+currentBlock.yOffset+1 >= fieldHeight)
+            {
+                // Collision
+                ChangeBlock();
+            }
+        }
+        
+    }
+
+    private void AddToField(Block block) 
+    {
+        int colorInt = Arrays.asList(Blocks.colors).indexOf(currentBlock.color);
+        for(BlockPart part : block.parts)
+        {
+            field[currentBlock.yOffset+part.y][currentBlock.xOffset+part.x] = colorInt;
+        }
+    }
     
     
     

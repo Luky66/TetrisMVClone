@@ -45,8 +45,11 @@ public class Block {
             index = 0;
         }
         
+        // important
         SetBlockFromMatrix(Blocks.GetBlock(index, shape));
         
+        xOffset = 4;
+        yOffset = 0;
     }
     
     

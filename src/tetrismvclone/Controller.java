@@ -5,6 +5,8 @@
 
 package tetrismvclone;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 public class Controller {
@@ -13,6 +15,8 @@ public class Controller {
     private View view;
     
     private JFrame frame;
+    
+    boolean gameRunning = true;
     
     public Controller()
     {
@@ -32,5 +36,27 @@ public class Controller {
         // pack everything
         frame.pack();
         frame.setVisible(true);
+    }
+    
+    public void MainLoop()
+    {
+        // Main Game Loop
+        while(gameRunning)
+        {
+            model.CheckForCollision();
+            
+            model.Gravity();
+            view.repaint();
+        
+            // pause to 
+            try { 
+                Thread.sleep(50*10);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        
+        
     }
 }

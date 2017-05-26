@@ -51,7 +51,7 @@ public class View extends JPanel{
         g.fillRect(0, 0, preferredDimension.width, preferredDimension.height);
     
         // Draw field
-        for(int y=0; y < drawRows; y++)
+        for(int y=2; y < drawRows; y++)
         {
             for (int x = 0; x < drawCols; x++) {
                 if(field[y][x] != 0) // if not transparent at position
