@@ -10,7 +10,7 @@ import java.util.Random;
 public class Block {
     
     public String[] types = {
-        "I", "J"//, "L", "O", "S", "T", "Z"
+        "I", "J", "L", "O", "S", "T", "Z"
     };
     
     public String type; // The Blocks are I,J,L,O,S,T,Z
@@ -47,7 +47,7 @@ public class Block {
         // important
         SetBlockFromMatrix(Blocks.GetBlock(index, shape), offsetX, offsetY);
         
-        x = 4+offsetX;
+        x = 2+offsetX;
         y = 0;
     }
     

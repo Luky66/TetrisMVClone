@@ -29,6 +29,7 @@ public class Controller implements KeyListener{
         // Set variables from model to view
         view.field = model.field; // set the starting field
         view.currentBlock = model.currentBlock;
+        view.nextBlock = model.nextBlock;
         
         // Initiate frame
         JFrame frame = new JFrame("Tetris 4 Dummies");
@@ -64,23 +65,40 @@ public class Controller implements KeyListener{
             // move the block down...
             model.Gravity();
             
-            // update the view
-            view.field = model.field;
-            view.currentBlock = model.currentBlock;
+            // update everything and sync model and view
+            Update();
             
-            // repaint
-            view.repaint();
+            // check for gameover
+            if(model.CheckForGameOver())
+            {
+                GameOver();
+            }
         
             // pause 
             try { 
-                Thread.sleep(50*10);
+                Thread.sleep(500/model.timeAmplifier);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
         }
-        
-        
-        
+    }
+    
+    private void Update()
+    {
+        // update the view
+        view.field = model.field;
+        view.currentBlock = model.currentBlock;
+        view.nextBlock = model.nextBlock;
+
+        // repaint
+        view.repaint();
+    }
+    
+    private void GameOver()
+    {
+        System.out.println("Game Over!");
+        gameRunning = false;
     }
 
     @Override
@@ -91,6 +109,12 @@ public class Controller implements KeyListener{
     @Override
     public void keyPressed(KeyEvent e) {
         //System.out.println("key pressed: "+e.getKeyChar());
+        
+        if(!gameRunning)
+        {
+            return;
+        }
+        
         switch(e.getKeyCode())
         {
             // Left
@@ -134,5 +158,21 @@ public class Controller implements KeyListener{
     @Override
     public void keyReleased(KeyEvent e) {
         //System.out.println("key released: "+e.getKeyChar());
+        
+        if(!gameRunning)
+        {
+            return;
+        }
+        
+        switch(e.getKeyCode())
+        {
+            // Down
+            case KeyEvent.VK_DOWN:
+                model.timeAmplifier = 1;
+                break;
+            case KeyEvent.VK_S:
+                model.timeAmplifier = 1;
+                break;
+        }
     }
 }

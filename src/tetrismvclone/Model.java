@@ -24,20 +24,7 @@ public class Model {
     // The blocks which are falling
     public Block currentBlock;
     public Block nextBlock;
-    public boolean pushBlockDown = false;
-    
-    /*
-    // Colours
-    static final int EMPTY = 0;
-    static final int WHITE = 1;
-    static final int CYAN = 2;
-    static final int BLUE = 3;
-    static final int ORANGE = 4;
-    static final int YELLOW = 5;
-    static final int GREEN = 6;
-    static final int MAGENTA = 7;
-    static final int RED = 8;
-    */
+    int timeAmplifier = 1;
     
     // Directions
     static final int LEFT = 2;
@@ -83,11 +70,24 @@ public class Model {
                 currentBlock.Rotate(1);
                 
                 // make sure the block is in the field
-                
+                for (BlockPart part : currentBlock.parts) 
+                {
+                    if(part.x+currentBlock.x < 0)
+                    {
+                        // the block is to far left.
+                        currentBlock.x++;
+                    }
+                    if(part.x+currentBlock.x >= fieldWidth)
+                    {
+                        // the block is too far right
+                        currentBlock.x--;
+                    }
+                }
                 
                 break;
             case DOWN:
-                System.out.println("Block is falling");
+                timeAmplifier = 5;
+                break;
             default:
                 System.out.println("Unknown direction int "+direction+" given.");
                 break;
@@ -118,8 +118,7 @@ public class Model {
             // Border
             if(part.y+currentBlock.y+1 >= fieldHeight)
             {
-                // Collision
-                System.out.println("Collision with bottom");
+                // Collision with bottom
                 ChangeBlock();
                 return;
             }
@@ -127,7 +126,7 @@ public class Model {
             // Field
             if(field[part.y+currentBlock.y+1][part.x+currentBlock.x] > 0)
             {
-                System.out.println("Collision with field");
+                // Collision with field
                 ChangeBlock();
                 return;
             }
@@ -170,6 +169,19 @@ public class Model {
                 field[i+1][x] = field[i][x];
             }
         }
+    }
+    
+    public boolean CheckForGameOver()
+    {
+        // iterates throuh the first row and checks if any block is used.
+        for (int x = 0; x < fieldWidth; x++) {
+            // the visible field starts at y = 2.
+            if(field[2][x] > 0)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void AddToField(Block block) 
