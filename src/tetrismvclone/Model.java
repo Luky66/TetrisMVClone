@@ -12,22 +12,24 @@ public class Model {
     
     // Play field
     public int fieldHeight = 22;
-    public int fieldWidth = 13;
+    public int fieldWidth = 10;
     public int fieldSpawnArea = 2; 
     
         /* The spwan area is a area at the top of the field which isn't visible for the player 
         and is where the blocks are spawned */
     
     // The play field that is filled with colours (int for colour)
-    public int[][] field = new int[fieldHeight][fieldWidth];
+    public int[][] field;
     
     // The blocks which are falling
     public Block currentBlock;
     public Block nextBlock;
+    public boolean pushBlockDown = false;
     
+    /*
     // Colours
     static final int EMPTY = 0;
-    static final int BLACK = 1;
+    static final int WHITE = 1;
     static final int CYAN = 2;
     static final int BLUE = 3;
     static final int ORANGE = 4;
@@ -35,17 +37,65 @@ public class Model {
     static final int GREEN = 6;
     static final int MAGENTA = 7;
     static final int RED = 8;
+    */
     
+    // Directions
+    static final int LEFT = 2;
+    static final int RIGHT = 0;
+    static final int DOWN = 3;
+    static final int ROTATE = 1;
     
     public Model()
     {
+        field = new int[fieldHeight][fieldWidth];
+        
         currentBlock = new Block();
         nextBlock = new Block();
     }
     
+    public void MoveBlock(int direction)
+    {
+        switch(direction)
+        {
+            case LEFT:
+                // Check for left border
+                for(BlockPart part : currentBlock.parts)
+                {
+                    if(part.x+currentBlock.x-1 < 0)
+                    {
+                        return;
+                    }
+                }
+                currentBlock.x--;
+                break;
+            case RIGHT:
+                for(BlockPart part : currentBlock.parts)
+                {
+                    if(part.x+currentBlock.x+1 >= fieldWidth)
+                    {
+                        return;
+                    }
+                }
+                currentBlock.x++;
+                break;
+            case ROTATE:
+                // Set the block
+                currentBlock.Rotate(1);
+                
+                // make sure the block is in the field
+                
+                
+                break;
+            case DOWN:
+                System.out.println("Block is falling");
+            default:
+                System.out.println("Unknown direction int "+direction+" given.");
+                break;
+        }
+    }
+    
     public void ChangeBlock()
     {
-        System.out.println("Collision detected");
         // Set the field
         AddToField(currentBlock);
         
@@ -56,23 +106,70 @@ public class Model {
     
     public void Gravity()
     {
-        currentBlock.yOffset++; // lowers the current block by 1
+        currentBlock.y++; // lowers the current block by 1
     }
     
     // Collisions
     public void CheckForCollision()
     {
-        // Field
-        // Border
         for (BlockPart part : currentBlock.parts) 
         {
-            if(part.y+currentBlock.yOffset+1 >= fieldHeight)
+            
+            // Border
+            if(part.y+currentBlock.y+1 >= fieldHeight)
             {
                 // Collision
+                System.out.println("Collision with bottom");
                 ChangeBlock();
+                return;
+            }
+            
+            // Field
+            if(field[part.y+currentBlock.y+1][part.x+currentBlock.x] > 0)
+            {
+                System.out.println("Collision with field");
+                ChangeBlock();
+                return;
             }
         }
+    }
+    
+    public void CheckForClear()
+    {
+        boolean foundGapInLine = false;
+        // search for whole lines in the field
+        for (int y = 0; y < fieldHeight; y++) {
+            foundGapInLine = false;
+            for (int x = 0; x < fieldWidth; x++) {
+                if(field[y][x] <= 0)
+                {
+                    // if theres a gap, stop searching
+                    foundGapInLine = true;
+                    break;
+                }
+            }
+            if(foundGapInLine == false)
+            {
+                // the line is gap free -> clear it
+                ClearLineInField(y);
+            }
+        }
+    }
+    
+    private void ClearLineInField(int y)
+    {
+        // clear the line
+        for (int x = 0; x < fieldWidth; x++) {
+            field[y][x] = 0;
+        }
         
+        // push everything down
+        for (int i = y-1; i > 0; i--) {
+            for (int x = 0; x < fieldWidth; x++) 
+            {
+                field[i+1][x] = field[i][x];
+            }
+        }
     }
 
     private void AddToField(Block block) 
@@ -80,7 +177,7 @@ public class Model {
         int colorInt = Arrays.asList(Blocks.colors).indexOf(currentBlock.color);
         for(BlockPart part : block.parts)
         {
-            field[currentBlock.yOffset+part.y][currentBlock.xOffset+part.x] = colorInt;
+            field[currentBlock.y+part.y][currentBlock.x+part.x] = colorInt;
         }
     }
     

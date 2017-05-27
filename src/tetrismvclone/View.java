@@ -15,14 +15,13 @@ import tetrismvclone.blocks.Blocks;
 public class View extends JPanel{
     
     private final int squareSize = 30; // In pixels
-    private int drawRows;
-    private int calcRows;
-    private int drawCols;
-    private int calcCols;
+    private int rows;
+    private int cols;
+    private int blockedArea;
     private Dimension preferredDimension;
     
     // Colours
-    Color backgroundColor = Color.white;
+    Color backgroundColor = Color.gray;
     
     // Field
     public int[][] field;
@@ -30,16 +29,15 @@ public class View extends JPanel{
     // Block
     public Block currentBlock;
             
-    public void View(JFrame frame, int calcRows, int drawRows, int calcCols)
+    public void View(JFrame frame, int rows, int blockedArea, int cols)
     {
-        this.preferredDimension = new Dimension(squareSize*calcCols, squareSize*drawRows);
+        this.preferredDimension = new Dimension(squareSize*cols, squareSize*(rows-blockedArea));
         this.setPreferredSize(preferredDimension);
         this.setBackground(backgroundColor);
         
-        this.drawRows = drawRows;
-        this.calcRows = calcRows;
-        this.calcCols = calcCols;
-        this.drawCols = calcCols;
+        this.rows = rows;
+        this.cols = cols;
+        this.blockedArea = blockedArea;
         
         frame.add(this);
     }
@@ -47,23 +45,24 @@ public class View extends JPanel{
     @Override
     public void paint(Graphics g)
     {
+        // Draw background
         g.setColor(backgroundColor);
         g.fillRect(0, 0, preferredDimension.width, preferredDimension.height);
     
         // Draw field
-        for(int y=2; y < drawRows; y++)
+        for(int y=blockedArea; y < rows; y++)
         {
-            for (int x = 0; x < drawCols; x++) {
+            for (int x = 0; x < cols; x++) {
                 if(field[y][x] != 0) // if not transparent at position
                 {
-                    DrawSquare(g, x, y, Blocks.colors[field[y][x]]);
+                    DrawSquare(g, x, y-blockedArea, Blocks.colors[field[y][x]]);
                 }
             }
         }
         
         // Draw falling block
         for (BlockPart part : currentBlock.parts) {
-            DrawSquare(g, part.x+currentBlock.xOffset, part.y+currentBlock.yOffset, currentBlock.color);
+            DrawSquare(g, part.x+currentBlock.x, part.y+currentBlock.y-blockedArea, currentBlock.color);
         }
     }
     
@@ -71,6 +70,8 @@ public class View extends JPanel{
     {
         g.setColor(color);
         g.fillRect(x*squareSize, y*squareSize, squareSize, squareSize);
+        g.setColor(Color.black);
+        g.drawRect(x*squareSize, y*squareSize, squareSize, squareSize);
     }
     
 }

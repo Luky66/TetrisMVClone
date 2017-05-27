@@ -8,8 +8,8 @@ public class Blocks {
     // all the colours
     public static final Color[] colors = 
     {
-        Color.white,
         Color.black,
+        Color.white,
         Color.cyan,
         Color.blue,
         Color.orange,
@@ -29,12 +29,34 @@ public class Blocks {
                 {0, 0, 0, 0}
             },
             { // shape 1
-                {0, 1, 0, 0},
-                {0, 1, 0, 0},
-                {0, 1, 0, 0},
-                {0, 1, 0, 0}
+                {0, 2, 0, 0},
+                {0, 2, 0, 0},
+                {0, 2, 0, 0},
+                {0, 2, 0, 0}
             }
-        }
+        },
+        {
+            { // shape 0
+                {0, 0, 0},
+                {3, 3, 3},
+                {0, 0, 3}
+            },
+            { // shape 1
+                {0, 3, 0},
+                {0, 3, 0},
+                {3, 3, 0}
+            },
+            { // shape 2
+                {3, 0, 0},
+                {3, 3, 3},
+                {0, 0, 0}
+            },
+            { // shape 3
+                {0, 3, 3},
+                {0, 3, 0},
+                {0, 3, 0}
+            }  
+        }  
     };
     
     
