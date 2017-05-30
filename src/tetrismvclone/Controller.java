@@ -23,18 +23,12 @@ public class Controller implements KeyListener{
     
     public Controller()
     {
-        model = new Model();
-        view = new View();
+        model = new Model(0);
         
-        // Set variables from model to view
-        view.field = model.field; // set the starting field
-        view.currentBlock = model.currentBlock;
-        view.nextBlock = model.nextBlock;
         
         // Initiate frame
         JFrame frame = new JFrame("Tetris 4 Dummies");
-        view.View(frame, model.fieldHeight, model.fieldSpawnArea, model.fieldWidth); // Call the controller
-        
+
         
         frame.addKeyListener(this);    
         
@@ -47,6 +41,21 @@ public class Controller implements KeyListener{
             }
         });
         
+        view = new View(frame, model.fieldHeight, model.fieldSpawnArea, model.fieldWidth); // Call the controller
+        
+
+        // Set variables from model to view
+        view.field = model.field; // set the starting field
+        view.currentBlock = model.currentBlock;
+        view.nextBlock = model.nextBlock;
+        
+        // scoring
+        view.level = model.level;
+        view.score = model.score;
+        view.lineClears = model.linesCleared;
+        
+        
+        
         
         // pack everything
         frame.pack();
@@ -58,8 +67,15 @@ public class Controller implements KeyListener{
         // Main Game Loop
         while(gameRunning)
         {
+            // check for gameover
+            if(model.CheckForGameOver())
+            {
+                GameOver();
+                break;
+            }
+            
             // Check for stuff
-            model.CheckForCollision();
+            model.CheckForDownwardsCollision();
             model.CheckForClear();
             
             // move the block down...
@@ -68,18 +84,17 @@ public class Controller implements KeyListener{
             // update everything and sync model and view
             Update();
             
-            // check for gameover
-            if(model.CheckForGameOver())
-            {
-                GameOver();
-            }
+            
         
             // pause 
-            try { 
-                Thread.sleep(500/model.timeAmplifier);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            for (int i = 0; i < 10/model.timeAmplifier; i++) {
+                try { 
+                    Thread.sleep(50);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
+            
             
         }
     }
@@ -90,7 +105,15 @@ public class Controller implements KeyListener{
         view.field = model.field;
         view.currentBlock = model.currentBlock;
         view.nextBlock = model.nextBlock;
+        
+        // scoring
+        view.level = model.level;
+        view.score = model.score;
+        view.lineClears = model.linesCleared;
 
+        // Update UI
+        view.UpdateUI();
+        
         // repaint
         view.repaint();
     }
@@ -110,7 +133,7 @@ public class Controller implements KeyListener{
     public void keyPressed(KeyEvent e) {
         //System.out.println("key pressed: "+e.getKeyChar());
         
-        if(!gameRunning)
+        if(!gameRunning || model.blockFalling)
         {
             return;
         }
@@ -158,21 +181,5 @@ public class Controller implements KeyListener{
     @Override
     public void keyReleased(KeyEvent e) {
         //System.out.println("key released: "+e.getKeyChar());
-        
-        if(!gameRunning)
-        {
-            return;
-        }
-        
-        switch(e.getKeyCode())
-        {
-            // Down
-            case KeyEvent.VK_DOWN:
-                model.timeAmplifier = 1;
-                break;
-            case KeyEvent.VK_S:
-                model.timeAmplifier = 1;
-                break;
-        }
     }
 }

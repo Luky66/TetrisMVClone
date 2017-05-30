@@ -18,6 +18,11 @@ public class Model {
         /* The spwan area is a area at the top of the field which isn't visible for the player 
         and is where the blocks are spawned */
     
+    // Game score
+    public int level;
+    public int score = 0;
+    public int linesCleared = 0;
+    
     // The play field that is filled with colours (int for colour)
     public int[][] field;
     
@@ -25,6 +30,7 @@ public class Model {
     public Block currentBlock;
     public Block nextBlock;
     int timeAmplifier = 1;
+    public boolean blockFalling = false;
     
     // Directions
     static final int LEFT = 2;
@@ -32,8 +38,10 @@ public class Model {
     static final int DOWN = 3;
     static final int ROTATE = 1;
     
-    public Model()
+    public Model(int startLevel)
     {
+        this.level = startLevel;
+        
         field = new int[fieldHeight][fieldWidth];
         
         currentBlock = new Block();
@@ -45,7 +53,7 @@ public class Model {
         switch(direction)
         {
             case LEFT:
-                // Check for left border
+                // Check for border
                 for(BlockPart part : currentBlock.parts)
                 {
                     if(part.x+currentBlock.x-1 < 0)
@@ -53,20 +61,29 @@ public class Model {
                         return;
                     }
                 }
+                if(CheckForOverlapCollision(-1)) // prohibit moving into the field sideways
+                {
+                    return;
+                }
                 currentBlock.x--;
                 break;
             case RIGHT:
                 for(BlockPart part : currentBlock.parts)
                 {
-                    if(part.x+currentBlock.x+1 >= fieldWidth)
+                    if(part.x+currentBlock.x+1 >= fieldWidth) 
                     {
                         return;
                     }
+                }
+                if(CheckForOverlapCollision(1))
+                {
+                    return;
                 }
                 currentBlock.x++;
                 break;
             case ROTATE:
                 // Set the block
+                int startRotation = currentBlock.shape;
                 currentBlock.Rotate(1);
                 
                 // make sure the block is in the field
@@ -84,9 +101,27 @@ public class Model {
                     }
                 }
                 
+                // and it's not overlapping or antyhing, otherwise rotate it once more...
+                while(CheckForOverlapCollision(0))
+                {
+                    // the block is overlapping with the field
+                    
+                    if(currentBlock.shape == startRotation)
+                    {
+                        // something is wrong, the block was rotated fully already: abort
+                        break;
+                    }
+                    
+                    // rotate the block
+                    currentBlock.Rotate(1);
+                }
+                
+                
+                
                 break;
             case DOWN:
-                timeAmplifier = 5;
+                timeAmplifier = 10;
+                blockFalling = true;
                 break;
             default:
                 System.out.println("Unknown direction int "+direction+" given.");
@@ -96,6 +131,10 @@ public class Model {
     
     public void ChangeBlock()
     {
+        // reset variables
+        blockFalling = false;
+        timeAmplifier = 1;
+        
         // Set the field
         AddToField(currentBlock);
         
@@ -110,7 +149,7 @@ public class Model {
     }
     
     // Collisions
-    public void CheckForCollision()
+    public void CheckForDownwardsCollision()
     {
         for (BlockPart part : currentBlock.parts) 
         {
@@ -133,9 +172,35 @@ public class Model {
         }
     }
     
+    private boolean CheckForOverlapCollision(int xOffset)
+    {
+        
+            
+            
+        for (BlockPart part : currentBlock.parts) 
+        {
+            // Debug
+            if(part.y+currentBlock.y >= fieldHeight)
+            {
+                return true;
+            }
+            
+            // Field
+            if(field[part.y+currentBlock.y][part.x+currentBlock.x+xOffset] > 0)
+            {
+                // Collision with field
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
     public void CheckForClear()
     {
+        int linesCleared = 0;
         boolean foundGapInLine = false;
+        
         // search for whole lines in the field
         for (int y = 0; y < fieldHeight; y++) {
             foundGapInLine = false;
@@ -150,9 +215,12 @@ public class Model {
             if(foundGapInLine == false)
             {
                 // the line is gap free -> clear it
+                linesCleared++;
                 ClearLineInField(y);
             }
         }
+        
+        Score(linesCleared);
     }
     
     private void ClearLineInField(int y)
@@ -191,6 +259,28 @@ public class Model {
         {
             field[currentBlock.y+part.y][currentBlock.x+part.x] = colorInt;
         }
+    }
+
+    private void Score(int lines) 
+    {
+        int lineMultiplier = 0;
+        
+        switch(lines)
+        {
+            case 1:
+                lineMultiplier = 40;
+                break;
+            case 2:
+                lineMultiplier = 100;
+                break;
+            case 3:
+                lineMultiplier = 300;
+                break;
+            case 4:
+                lineMultiplier = 1200;
+                break;
+        }
+        score += lineMultiplier*(level+1);
     }
     
     

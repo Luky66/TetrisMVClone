@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import tetrismvclone.blocks.Block;
@@ -23,6 +24,12 @@ public class View extends JPanel{
     private int blockedArea;
     Color backgroundColor = Color.gray;
     
+    // score
+    public int level;
+    public int score;
+    public int lineClears;
+    private JLabel scoreLabel = new JLabel("Score: "+0);
+    JFrame frame;
     
     // UI
     private int uiWidth = 210; // in pixels
@@ -40,7 +47,7 @@ public class View extends JPanel{
     public Block currentBlock;
     public Block nextBlock;
             
-    public void View(JFrame frame, int rows, int blockedArea, int cols)
+    public View(JFrame frame, int rows, int blockedArea, int cols)
     {
         this.preferredDimension = new Dimension(squareSize*cols+uiWidth+2*applicationBorder, squareSize*(rows-blockedArea)+2*applicationBorder);
         this.setPreferredSize(preferredDimension);
@@ -50,12 +57,18 @@ public class View extends JPanel{
         this.cols = cols;
         this.blockedArea = blockedArea;
         
+        this.frame = frame;
+        scoreLabel.setBounds(preferredDimension.width-displayBlockWidth-applicationBorder, 2*applicationBorder+displayBlockHeight, displayBlockWidth, 50);
+        frame.add(scoreLabel);
+        
         frame.add(this);
     }
     
     @Override
     public void paint(Graphics g)
     {
+        //frame.scoreLabel.setText("wuut "+score);
+        //scoreLabel.setBounds(preferredDimension.width-displayBlockWidth-applicationBorder, 2*applicationBorder+displayBlockHeight, displayBlockWidth, 50);
         
         // Draw UI and block preview
         
@@ -104,6 +117,11 @@ public class View extends JPanel{
         g.fillRect(x*squareSize+xOff, y*squareSize+yOff, squareSize, squareSize);
         g.setColor(Color.black);
         g.drawRect(x*squareSize+xOff, y*squareSize+yOff, squareSize, squareSize);
+    }
+    
+    public void UpdateUI()
+    {
+        scoreLabel.setText("I'm here "+score);
     }
     
 }
