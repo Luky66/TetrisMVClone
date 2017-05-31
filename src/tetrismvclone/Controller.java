@@ -14,8 +14,14 @@ import javax.swing.JFrame;
 
 public class Controller implements KeyListener{
     
+    // Frame
+    private int applicationBorder = 20;
+    
+    // Model
     private Model model;
-    private View view;
+    
+    // Views
+    private PlayFieldView playFieldView;
     
     private JFrame frame;
     
@@ -28,7 +34,7 @@ public class Controller implements KeyListener{
         
         // Initiate frame
         JFrame frame = new JFrame("Tetris 4 Dummies");
-
+        
         
         frame.addKeyListener(this);    
         
@@ -41,25 +47,25 @@ public class Controller implements KeyListener{
             }
         });
         
-        view = new View(frame, model.fieldHeight, model.fieldSpawnArea, model.fieldWidth); // Call the controller
+        //view = new View(frame, model.fieldHeight, model.fieldSpawnArea, model.fieldWidth); // Call the controller
+        playFieldView = new PlayFieldView(model.fieldHeight, model.fieldSpawnArea, model.fieldWidth);
+        frame.add(playFieldView);
         
-
         // Set variables from model to view
-        view.field = model.field; // set the starting field
-        view.currentBlock = model.currentBlock;
-        view.nextBlock = model.nextBlock;
+        playFieldView.field = model.field; // set the starting field
+        playFieldView.currentBlock = model.currentBlock;
         
-        // scoring
-        view.level = model.level;
-        view.score = model.score;
-        view.lineClears = model.linesCleared;
         
+        //view.nextBlock = model.nextBlock;
         
         
         
         // pack everything
-        frame.pack();
+        frame.setSize(playFieldView.getWidth()+2*applicationBorder, playFieldView.getHeight()+2*applicationBorder);
+        //frame.pack();
+        frame.setLayout(null);
         frame.setVisible(true);
+        
     }
     
     public void MainLoop()
@@ -102,20 +108,21 @@ public class Controller implements KeyListener{
     private void Update()
     {
         // update the view
-        view.field = model.field;
-        view.currentBlock = model.currentBlock;
-        view.nextBlock = model.nextBlock;
+        playFieldView.field = model.field;
+        playFieldView.currentBlock = model.currentBlock;
         
-        // scoring
-        view.level = model.level;
-        view.score = model.score;
-        view.lineClears = model.linesCleared;
+        //view.nextBlock = model.nextBlock;
+        
+        if(model.scoresChanged)
+        {
+            // Update UI
+            //view.UpdateScores(model.score);
+            model.scoresChanged = false;
+        }
 
-        // Update UI
-        view.UpdateUI();
-        
         // repaint
-        view.repaint();
+        //view.repaint();
+        playFieldView.repaint();
     }
     
     private void GameOver()
@@ -175,7 +182,7 @@ public class Controller implements KeyListener{
                 model.MoveBlock(1);
                 break;
         }
-        view.repaint();
+        playFieldView.repaint();
     }
 
     @Override

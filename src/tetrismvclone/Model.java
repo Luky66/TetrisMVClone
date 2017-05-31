@@ -22,6 +22,7 @@ public class Model {
     public int level;
     public int score = 0;
     public int linesCleared = 0;
+    public boolean scoresChanged = false;
     
     // The play field that is filled with colours (int for colour)
     public int[][] field;
@@ -281,6 +282,7 @@ public class Model {
                 break;
         }
         score += lineMultiplier*(level+1);
+        scoresChanged = true;
     }
     
     

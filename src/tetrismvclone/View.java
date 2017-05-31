@@ -26,10 +26,10 @@ public class View extends JPanel{
     
     // score
     public int level;
-    public int score;
+    private int score = 0;
     public int lineClears;
-    private JLabel scoreLabel = new JLabel("Score: "+0);
-    JFrame frame;
+    private JLabel scoreLabel;
+    //JFrame frame;
     
     // UI
     private int uiWidth = 210; // in pixels
@@ -57,19 +57,24 @@ public class View extends JPanel{
         this.cols = cols;
         this.blockedArea = blockedArea;
         
-        this.frame = frame;
-        scoreLabel.setBounds(preferredDimension.width-displayBlockWidth-applicationBorder, 2*applicationBorder+displayBlockHeight, displayBlockWidth, 50);
-        frame.add(scoreLabel);
+        //this.frame = frame;
         
+        // Label
+        JLabel label = new JLabel("Score: " + score);
+        label.setBounds(preferredDimension.width-displayBlockWidth-applicationBorder, 2*applicationBorder+displayBlockHeight, displayBlockWidth, 50);
+        label.setSize(label.getPreferredSize());
+        
+        //label.setBackground(Color.white);
+        //label.setOpaque(true);
+        this.scoreLabel = label;
+        frame.add(label);        
         frame.add(this);
     }
     
     @Override
-    public void paint(Graphics g)
+    public void paintComponent(Graphics g)
     {
-        //frame.scoreLabel.setText("wuut "+score);
-        //scoreLabel.setBounds(preferredDimension.width-displayBlockWidth-applicationBorder, 2*applicationBorder+displayBlockHeight, displayBlockWidth, 50);
-        
+        super.paintComponent(g);
         // Draw UI and block preview
         
         g.setColor(backgroundColor);
@@ -109,6 +114,7 @@ public class View extends JPanel{
                 DrawSquare(g, part.x+currentBlock.x, part.y+currentBlock.y-blockedArea, currentBlock.color, applicationBorder, applicationBorder);
             }
         }
+        
     }
     
     private void DrawSquare(Graphics g, int x, int y, Color color, int xOff, int yOff)
@@ -119,9 +125,20 @@ public class View extends JPanel{
         g.drawRect(x*squareSize+xOff, y*squareSize+yOff, squareSize, squareSize);
     }
     
-    public void UpdateUI()
+    public void UpdateScores(int score)
     {
-        scoreLabel.setText("I'm here "+score);
+        // Values
+        this.score = score;
+        
+        // Text
+        scoreLabel.setText("Score: " + score);
+        scoreLabel.setSize(scoreLabel.getPreferredSize());
+        
+        //scoreLabel.setText("I'm here "+score);
+        //frame.scoreLabel.setText("wuut "+score);
+        //scoreLabel.setBounds(preferredDimension.width-displayBlockWidth-applicationBorder, 2*applicationBorder+displayBlockHeight, displayBlockWidth, 50);
+        //scoreLabel.setText("Score: "+score);
+        //scoreLabel.setSize(scoreLabel.getPreferredSize());
     }
     
 }
