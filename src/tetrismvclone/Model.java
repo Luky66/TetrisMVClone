@@ -11,8 +11,8 @@ import tetrismvclone.blocks.Blocks;
 public class Model {
     
     // Play field
-    public int fieldHeight = 22;
-    public int fieldWidth = 10;
+    public int fieldHeight = 22; // 22
+    public int fieldWidth = 10; // 10
     public int fieldSpawnArea = 2; 
     
         /* The spwan area is a area at the top of the field which isn't visible for the player 
@@ -141,6 +141,8 @@ public class Model {
         
         // Set the blocks
         currentBlock = nextBlock;
+        currentBlock.x = 2;
+        
         nextBlock = new Block();
     }
     
@@ -175,9 +177,6 @@ public class Model {
     
     private boolean CheckForOverlapCollision(int xOffset)
     {
-        
-            
-            
         for (BlockPart part : currentBlock.parts) 
         {
             // Debug

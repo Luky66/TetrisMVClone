@@ -27,7 +27,7 @@ public class PlayFieldView extends JPanel{
     
     public PlayFieldView(int rows, int blockedArea, int cols)
     {
-        this.setBounds(20, 20, squareSize*cols+2, squareSize*(rows-blockedArea)+2);
+        this.setBounds(20, 20, squareSize*cols+1, squareSize*(rows-blockedArea)+1);
         this.setBackground(backgroundColor);
         
         this.rows = rows;
@@ -43,7 +43,7 @@ public class PlayFieldView extends JPanel{
         
         // Draw border
         g.setColor(Color.black);
-        g.drawRect(0, 0, this.getWidth(), this.getHeight());
+        g.drawRect(0, 0, this.getWidth()-1, this.getHeight()-1);
         
         
         // Draw field

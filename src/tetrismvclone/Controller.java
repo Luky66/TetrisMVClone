@@ -22,7 +22,10 @@ public class Controller implements KeyListener{
     
     // Views
     private PlayFieldView playFieldView;
+    private NextBlockPreview nextBlockPreview;
+    private ScoreView scoreView;
     
+    // Frame
     private JFrame frame;
     
     boolean gameRunning = true;
@@ -50,18 +53,25 @@ public class Controller implements KeyListener{
         //view = new View(frame, model.fieldHeight, model.fieldSpawnArea, model.fieldWidth); // Call the controller
         playFieldView = new PlayFieldView(model.fieldHeight, model.fieldSpawnArea, model.fieldWidth);
         frame.add(playFieldView);
+        nextBlockPreview = new NextBlockPreview(playFieldView.getWidth()+2*20, 20);
+        frame.add(nextBlockPreview);
+        scoreView = new ScoreView(playFieldView.getWidth()+2*20, nextBlockPreview.getHeight()+2*20, nextBlockPreview.getWidth(), playFieldView.getHeight()-applicationBorder-nextBlockPreview.getHeight());
+        frame.add(scoreView);
         
         // Set variables from model to view
         playFieldView.field = model.field; // set the starting field
         playFieldView.currentBlock = model.currentBlock;
-        
+        nextBlockPreview.nextBlock = model.nextBlock;
+        scoreView.score = model.score;
         
         //view.nextBlock = model.nextBlock;
         
         
         
-        // pack everything
-        frame.setSize(playFieldView.getWidth()+2*applicationBorder, playFieldView.getHeight()+2*applicationBorder);
+        // set the size
+        frame.setSize(playFieldView.getWidth()+nextBlockPreview.getWidth()+3*applicationBorder, playFieldView.getHeight()+3*applicationBorder);
+        frame.setResizable(false);
+        
         //frame.pack();
         frame.setLayout(null);
         frame.setVisible(true);
@@ -110,8 +120,11 @@ public class Controller implements KeyListener{
         // update the view
         playFieldView.field = model.field;
         playFieldView.currentBlock = model.currentBlock;
+        nextBlockPreview.nextBlock = model.nextBlock;
         
         //view.nextBlock = model.nextBlock;
+        scoreView.score = model.score;
+        scoreView.UpdateScore();
         
         if(model.scoresChanged)
         {
@@ -123,6 +136,7 @@ public class Controller implements KeyListener{
         // repaint
         //view.repaint();
         playFieldView.repaint();
+        nextBlockPreview.repaint();
     }
     
     private void GameOver()

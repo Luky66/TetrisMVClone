@@ -22,6 +22,9 @@ public class Block {
     public int x;
     public int y;
     
+    public int width;
+    public int height;
+    
     public int offsetX = 1;
     public int offsetY = 0;
     
@@ -47,7 +50,7 @@ public class Block {
         // important
         SetBlockFromMatrix(Blocks.GetBlock(index, shape), offsetX, offsetY);
         
-        x = 2+offsetX;
+        x = 0;
         y = 0;
     }
     
@@ -97,5 +100,43 @@ public class Block {
         for (int i = 0; i < parts.length; i++) {
             parts[i] = partList.get(i);
         }
+        
+        SetWidthAndHeight(parts, matrix[0].length, matrix.length);
+    }
+    
+    private void SetWidthAndHeight(BlockPart[] parts, int matrixWidth, int matrixHeight)
+    {
+        // Set start borders
+        int leftBorder = matrixWidth;
+        int rightBorder = 0;
+        int topBorder = matrixHeight;
+        int botBorder = 0;
+        
+        for(BlockPart part : parts)
+        {
+            if(part.x < leftBorder)
+            {
+                leftBorder = part.x;
+            }
+            if(part.x > rightBorder)
+            {
+                rightBorder = part.x;
+            }
+            if(part.y < topBorder)
+            {
+                topBorder = part.y;
+            }
+            if(part.y > botBorder)
+            {
+                botBorder = part.y;
+            }
+        }
+        
+        width = rightBorder-leftBorder+1;
+        height = botBorder-topBorder+1;
+        
+        offsetX = leftBorder;
+        offsetY = topBorder;
+        //System.out.println("width = "+width+"; height = "+height);
     }
 }
