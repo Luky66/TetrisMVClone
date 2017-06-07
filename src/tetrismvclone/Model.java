@@ -21,7 +21,7 @@ public class Model {
     // Game score
     public int level;
     public int score = 0;
-    public int linesCleared = 0;
+    public int lines = 0;
     public boolean scoresChanged = false;
     
     // The play field that is filled with colours (int for colour)
@@ -39,6 +39,11 @@ public class Model {
     static final int DOWN = 3;
     static final int ROTATE = 1;
     
+    // Speed
+    public final int startSleepTime = 500; // in ms
+    public int sleepTime;
+    public final double speedValue = 0.8; // The value the time to choose advances with
+    
     public Model(int startLevel)
     {
         this.level = startLevel;
@@ -47,6 +52,8 @@ public class Model {
         
         currentBlock = new Block();
         nextBlock = new Block();
+        
+        sleepTime = startSleepTime;
     }
     
     public void MoveBlock(int direction)
@@ -217,8 +224,10 @@ public class Model {
                 ClearLineInField(y);
             }
         }
+        lines += linesCleared; 
         
-        Score(linesCleared);
+        Score(linesCleared); // Change the points
+        ChangeLevel(lines); // Change the level if needed and adjust the speed
     }
     
     private void ClearLineInField(int y)
@@ -294,6 +303,14 @@ public class Model {
             blockFalling = false;
             timeAmplifier = 1;
         }
+    }
+
+    private void ChangeLevel(int lines) {
+        
+        level = (int) (Math.floor(lines/10)+1);
+        
+        // Change the speed
+        sleepTime = (int) (startSleepTime * Math.pow(speedValue, level-1));
     }
     
 }

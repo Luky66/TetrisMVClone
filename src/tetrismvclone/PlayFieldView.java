@@ -3,7 +3,9 @@ package tetrismvclone;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import tetrismvclone.blocks.Block;
 import tetrismvclone.blocks.BlockPart;
@@ -20,10 +22,11 @@ public class PlayFieldView extends JPanel{
     int[][] field;
     Block currentBlock;
     
-    
-    
     // draw
     Color backgroundColor = Color.gray;
+    
+    // GameOver stuff
+    private JLabel gameOverLabel = new JLabel("Game Over!");
     
     public PlayFieldView(int rows, int blockedArea, int cols)
     {
@@ -33,6 +36,13 @@ public class PlayFieldView extends JPanel{
         this.rows = rows;
         this.cols = cols;
         this.blockedArea = blockedArea;
+
+        gameOverLabel.setFont(new Font("GameOver", Font.BOLD, 36));
+        gameOverLabel.setForeground(Color.red);
+        gameOverLabel.setBounds(0, 120, WIDTH, HEIGHT);
+        gameOverLabel.setOpaque(false);
+        gameOverLabel.setVisible(false);
+        this.add(gameOverLabel);
     }
     
     @Override
@@ -73,5 +83,10 @@ public class PlayFieldView extends JPanel{
         g.fillRect(x*squareSize, y*squareSize, squareSize, squareSize);
         g.setColor(Color.black);
         g.drawRect(x*squareSize, y*squareSize, squareSize, squareSize);
+    }
+    
+    public void ShowGameOver()
+    {
+        gameOverLabel.setVisible(true);
     }
 }

@@ -32,7 +32,7 @@ public class Controller implements KeyListener{
     
     public Controller()
     {
-        model = new Model(0);
+        model = new Model(0); // We start at level 0
         
         
         // Initiate frame
@@ -105,7 +105,7 @@ public class Controller implements KeyListener{
             // pause 
             for (int i = 0; i < 10/model.timeAmplifier; i++) {
                 try { 
-                    Thread.sleep(50);
+                    Thread.sleep(model.sleepTime/10); // is 500 ms without hard drop
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -128,7 +128,8 @@ public class Controller implements KeyListener{
         if(model.scoresChanged)
         {
             scoreView.score = model.score;
-            
+            scoreView.level = model.level;
+            scoreView.lines = model.lines;
             
             scoreView.UpdateScore();
             model.scoresChanged = false;
@@ -144,6 +145,8 @@ public class Controller implements KeyListener{
     {
         System.out.println("Game Over!");
         gameRunning = false;
+        
+        playFieldView.ShowGameOver();
     }
 
     @Override
