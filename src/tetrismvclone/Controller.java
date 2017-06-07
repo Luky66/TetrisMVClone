@@ -36,7 +36,7 @@ public class Controller implements KeyListener{
         
         
         // Initiate frame
-        JFrame frame = new JFrame("Tetris 4 Dummies");
+        JFrame frame = new JFrame("Tetris MVClone");
         
         
         frame.addKeyListener(this);    
@@ -123,13 +123,14 @@ public class Controller implements KeyListener{
         nextBlockPreview.nextBlock = model.nextBlock;
         
         //view.nextBlock = model.nextBlock;
-        scoreView.score = model.score;
-        scoreView.UpdateScore();
+        
         
         if(model.scoresChanged)
         {
-            // Update UI
-            //view.UpdateScores(model.score);
+            scoreView.score = model.score;
+            
+            
+            scoreView.UpdateScore();
             model.scoresChanged = false;
         }
 
@@ -156,7 +157,19 @@ public class Controller implements KeyListener{
         
         if(!gameRunning || model.blockFalling)
         {
-            return;
+            switch(e.getKeyCode())
+            {
+                // Rotate
+                case KeyEvent.VK_UP:
+                    model.BlockFalling(false);
+                    return;
+                case KeyEvent.VK_W:
+                    model.BlockFalling(false);
+                    return;
+                default:
+                    return;
+            }
+            
         }
         
         switch(e.getKeyCode())

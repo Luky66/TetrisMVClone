@@ -25,7 +25,7 @@ public class Block {
     public int width;
     public int height;
     
-    public int offsetX = 1;
+    public int offsetX = 0;
     public int offsetY = 0;
     
     // Constructor
@@ -67,7 +67,7 @@ public class Block {
             shape = 0;
         }
         // Set the new block
-        SetBlockFromMatrix(Blocks.GetBlock(GetTypeIndex(type), shape), offsetX, offsetY);
+        SetBlockFromMatrix(Blocks.GetBlock(GetTypeIndex(type), shape), 0, 0);
     }
     
     private int GetTypeIndex(String typeString)

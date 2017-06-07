@@ -121,8 +121,7 @@ public class Model {
                 
                 break;
             case DOWN:
-                timeAmplifier = 10;
-                blockFalling = true;
+                BlockFalling(true);
                 break;
             default:
                 System.out.println("Unknown direction int "+direction+" given.");
@@ -133,8 +132,7 @@ public class Model {
     public void ChangeBlock()
     {
         // reset variables
-        blockFalling = false;
-        timeAmplifier = 1;
+        BlockFalling(false);
         
         // Set the field
         AddToField(currentBlock);
@@ -284,6 +282,18 @@ public class Model {
         scoresChanged = true;
     }
     
-    
+    public void BlockFalling(boolean fall)
+    {
+        if(fall)
+        {
+            blockFalling = true;
+            timeAmplifier = 10;
+        }
+        else
+        {
+            blockFalling = false;
+            timeAmplifier = 1;
+        }
+    }
     
 }
