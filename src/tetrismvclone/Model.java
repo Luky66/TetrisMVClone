@@ -313,4 +313,16 @@ public class Model {
         sleepTime = (int) (startSleepTime * Math.pow(speedValue, level-1));
     }
     
+    public void ColorField(int[][] matrix, int color)
+    {
+        for (int y = 0; y < matrix.length; y++) {
+            for (int x = 0; x < matrix[y].length; x++) {
+                if(matrix[y][x] > 0)
+                {
+                    // This field is not empty
+                    matrix[y][x] = color;
+                }
+            }
+        }
+    }
 }

@@ -8,8 +8,8 @@ public class Blocks {
     // all the colours
     public static final Color[] colors = 
     {
-        Color.black,
         Color.white,
+        Color.black,
         Color.cyan,
         Color.blue,
         Color.orange,

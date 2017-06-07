@@ -5,6 +5,7 @@
 
 package tetrismvclone;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.logging.Level;
@@ -83,16 +84,19 @@ public class Controller implements KeyListener{
         // Main Game Loop
         while(gameRunning)
         {
-            // check for gameover
-            if(model.CheckForGameOver())
-            {
-                GameOver();
-                break;
-            }
+            
             
             // Check for stuff
             model.CheckForDownwardsCollision();
             model.CheckForClear();
+            
+            // check for gameover
+            if(model.CheckForGameOver())
+            {
+                GameOver();
+                Update();
+                break;
+            }
             
             // move the block down...
             model.Gravity();
@@ -146,6 +150,10 @@ public class Controller implements KeyListener{
         System.out.println("Game Over!");
         gameRunning = false;
         
+        model.currentBlock = null;
+        model.nextBlock.color = Color.black;
+        
+        model.ColorField(model.field, 1);
         playFieldView.ShowGameOver();
     }
 

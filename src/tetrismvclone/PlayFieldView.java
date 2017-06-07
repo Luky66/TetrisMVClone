@@ -37,9 +37,10 @@ public class PlayFieldView extends JPanel{
         this.cols = cols;
         this.blockedArea = blockedArea;
 
+        this.setLayout(null);
         gameOverLabel.setFont(new Font("GameOver", Font.BOLD, 36));
         gameOverLabel.setForeground(Color.red);
-        gameOverLabel.setBounds(0, 120, WIDTH, HEIGHT);
+        gameOverLabel.setBounds(50, 120, 300, 50);
         gameOverLabel.setOpaque(false);
         gameOverLabel.setVisible(false);
         this.add(gameOverLabel);
@@ -67,14 +68,16 @@ public class PlayFieldView extends JPanel{
             }
         }
         
-        // Draw falling block
-        for (BlockPart part : currentBlock.parts) {
-            if(part.y+currentBlock.y >= 2)
-            {
-                DrawSquare(g, part.x+currentBlock.x, part.y+currentBlock.y-blockedArea, currentBlock.color);
+        if(currentBlock != null)
+        {
+            // Draw falling block
+            for (BlockPart part : currentBlock.parts) {
+                if(part.y+currentBlock.y >= 2)
+                {
+                    DrawSquare(g, part.x+currentBlock.x, part.y+currentBlock.y-blockedArea, currentBlock.color);
+                }
             }
         }
-        
     }
     
     private void DrawSquare(Graphics g, int x, int y, Color color)
