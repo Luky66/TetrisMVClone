@@ -1,23 +1,9 @@
 
 package tetrismvclone.blocks;
-
-import java.awt.Color;
+// extends my model
 
 public class Blocks {
-    
-    // all the colours
-    public static final Color[] colors = 
-    {
-        Color.white,
-        Color.black,
-        Color.cyan,
-        Color.blue,
-        Color.orange,
-        Color.yellow,
-        Color.green,
-        Color.magenta,
-        Color.red
-    };
+    // Here are all the blocks and shapes hardcoded
     
     public static int[][][][] blocks = 
     {

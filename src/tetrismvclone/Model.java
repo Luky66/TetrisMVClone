@@ -19,7 +19,8 @@ public class Model {
         and is where the blocks are spawned */
     
     // Game score
-    public int level;
+    public int level = 0;
+    public int startLevel;
     public int score = 0;
     public int lines = 0;
     public boolean scoresChanged = false;
@@ -42,26 +43,33 @@ public class Model {
     // Speed
     public final int startSleepTime = 500; // in ms
     public int sleepTime;
-    public final double speedValue = 0.8; // The value the time to choose advances with
+    public final double speedValue = 0.8; // The value the time is multiplied by, by level
+    
     
     public Model(int startLevel)
     {
-        this.level = startLevel;
+        this.startLevel = startLevel;
         
+        // The play field
         field = new int[fieldHeight][fieldWidth];
         
+        // The blocks
         currentBlock = new Block();
         nextBlock = new Block();
+        currentBlock.x = (int) (fieldWidth/2-(currentBlock.width+1)/2);
         
+        // The time between steps
         sleepTime = startSleepTime;
     }
     
     public void MoveBlock(int direction)
     {
+        // Before moving the block we make sure it can move there
+        
         switch(direction)
         {
             case LEFT:
-                // Check for border
+                // Check for right border
                 for(BlockPart part : currentBlock.parts)
                 {
                     if(part.x+currentBlock.x-1 < 0)
@@ -73,9 +81,11 @@ public class Model {
                 {
                     return;
                 }
+                // if here it didn't return, the way is free and the block may move there
                 currentBlock.x--;
                 break;
             case RIGHT:
+                // Check for left border
                 for(BlockPart part : currentBlock.parts)
                 {
                     if(part.x+currentBlock.x+1 >= fieldWidth) 
@@ -91,15 +101,18 @@ public class Model {
                 break;
             case ROTATE:
                 // Set the block
-                int startRotation = currentBlock.shape;
-                currentBlock.Rotate(1);
+                int startRotation = currentBlock.shape; // save the initial shape for later
+                
+                currentBlock.Rotate(1); // this changes the shape of the block to a block rotated 90 degrees clockwise
                 
                 // make sure the block is in the field
+                // if it rotates out of bounds it is moved inwards.
+                // we check for possible overlap with the field in a later stage
                 for (BlockPart part : currentBlock.parts) 
                 {
                     if(part.x+currentBlock.x < 0)
                     {
-                        // the block is to far left.
+                        // the block is too far left.
                         currentBlock.x++;
                     }
                     if(part.x+currentBlock.x >= fieldWidth)
@@ -109,135 +122,143 @@ public class Model {
                     }
                 }
                 
-                // and it's not overlapping or antyhing, otherwise rotate it once more...
+                // check for overlap
                 while(CheckForOverlapCollision(0))
                 {
-                    // the block is overlapping with the field
+                    // the block is overlapping with the field since the statement is true
                     
                     if(currentBlock.shape == startRotation)
                     {
                         // something is wrong, the block was rotated fully already: abort
+                        // the block can't rotate and therefore we are done and the shape is equals the start rotation
                         break;
                     }
                     
-                    // rotate the block
+                    // if in this occasion the block would have been overlapping in this rotation, rotate it once more.
+                    // maybe it will work next time
                     currentBlock.Rotate(1);
                 }
-                
-                
-                
                 break;
+                
             case DOWN:
-                BlockFalling(true);
+                BlockFalling(true); // make the block fall faster and do everything that is needed
                 break;
+                
             default:
+                // If an unknown direction is passed into this function, prompt it.
                 System.out.println("Unknown direction int "+direction+" given.");
                 break;
         }
     }
     
-    public void ChangeBlock()
+    public void SetAndChangeBlock() 
+    // when the block has collided and should get replaced, this function is called
     {
         // reset variables
-        BlockFalling(false);
+        BlockFalling(false); // stop it from falling if it was
         
         // Set the field
-        AddToField(currentBlock);
+        AddToField(currentBlock); // add the collided block to the field
         
         // Set the blocks
-        currentBlock = nextBlock;
-        currentBlock.x = 2;
+        currentBlock = nextBlock; // the previewed block is now the current block
+        currentBlock.x = (int) (fieldWidth/2-(currentBlock.width+1)/2); 
+        // change the x position to center the block on the playfield
+        // if it is uneven go one square left
         
-        nextBlock = new Block();
+        nextBlock = new Block(); // also add a new block which is displayed in the block preview
     }
     
-    public void Gravity()
+    public void Gravity() // pretty self explanatory 
     {
-        currentBlock.y++; // lowers the current block by 1
+        currentBlock.y++; // lowers the current block by 1 // as a reminder: y points downwards
     }
     
     // Collisions
-    public void CheckForDownwardsCollision()
+    public void CheckForDownwardsCollision() // checks if the block can move straight down
     {
-        for (BlockPart part : currentBlock.parts) 
+        for (BlockPart part : currentBlock.parts) // loops through all the parts of the block
         {
-            
             // Border
-            if(part.y+currentBlock.y+1 >= fieldHeight)
+            if(part.y+currentBlock.y+1 >= fieldHeight) // Check if it is colliding with the border
             {
                 // Collision with bottom
-                ChangeBlock();
+                SetAndChangeBlock();
                 return;
             }
             
             // Field
-            if(field[part.y+currentBlock.y+1][part.x+currentBlock.x] > 0)
+            if(field[part.y+currentBlock.y+1][part.x+currentBlock.x] > 0) // check if it is colliding with the field
             {
                 // Collision with field
-                ChangeBlock();
+                SetAndChangeBlock();
                 return;
             }
+            // if only a single one block part is going to collide with those it will change the block.
         }
     }
     
     private boolean CheckForOverlapCollision(int xOffset)
+    // xOffset is an int that can indicate where the block will be moving. 
     {
         for (BlockPart part : currentBlock.parts) 
         {
-            // Debug
+            // For safety reasons
             if(part.y+currentBlock.y >= fieldHeight)
             {
                 return true;
             }
             
-            // Field
+            // Check overlap with the field
             if(field[part.y+currentBlock.y][part.x+currentBlock.x+xOffset] > 0)
             {
-                // Collision with field
+                // the block is overlapping (or would be)
                 return true;
             }
         }
+        // no overlap detected
         return false;
     }
     
     
     public void CheckForClear()
+    // in this function we check if there is a full line in the field that should be cleared
     {
-        int linesCleared = 0;
-        boolean foundGapInLine = false;
+        int linesCleared = 0; // indicates how many lines were cleared since the start of this function. (max 4 -> long block)
+        boolean foundGapInLine; // a boolean to shorten the search
         
-        // search for whole lines in the field
+        // search for complete lines in the field
         for (int y = 0; y < fieldHeight; y++) {
             foundGapInLine = false;
             for (int x = 0; x < fieldWidth; x++) {
-                if(field[y][x] <= 0)
+                if(field[y][x] <= 0) // if this squre in the field is empty
                 {
-                    // if theres a gap, stop searching
+                    // there is a gap
                     foundGapInLine = true;
-                    break;
+                    break; // search the next row
                 }
             }
             if(foundGapInLine == false)
             {
                 // the line is gap free -> clear it
-                linesCleared++;
-                ClearLineInField(y);
+                linesCleared++; // add one to the lines cleared this call
+                ClearLineInField(y); // and clear the line
             }
         }
-        lines += linesCleared; 
+        lines += linesCleared; // add the cleared lines this time to the cleared lines alltime
         
-        Score(linesCleared); // Change the points
+        Score(linesCleared); // Add points
         ChangeLevel(lines); // Change the level if needed and adjust the speed
     }
     
-    private void ClearLineInField(int y)
+    private void ClearLineInField(int y) // clears a line in the field and adjusts all blocks above
     {
         // clear the line
         for (int x = 0; x < fieldWidth; x++) {
-            field[y][x] = 0;
+            field[y][x] = 0; // empty all the squares in this row
         }
         
-        // push everything down
+        // push everything above down one block
         for (int i = y-1; i > 0; i--) {
             for (int x = 0; x < fieldWidth; x++) 
             {
@@ -248,9 +269,10 @@ public class Model {
     
     public boolean CheckForGameOver()
     {
-        // iterates throuh the first row and checks if any block is used.
+        // iterates throuh the third row and checks if any square isn't empty.
+        // Hint: The third row is the first row visible
         for (int x = 0; x < fieldWidth; x++) {
-            // the visible field starts at y = 2.
+            // the visible field starts at y = 2
             if(field[2][x] > 0)
             {
                 return true;
@@ -259,19 +281,21 @@ public class Model {
         return false;
     }
 
-    private void AddToField(Block block) 
+    private void AddToField(Block block) // adds a block to the playfield
     {
-        int colorInt = Arrays.asList(Blocks.colors).indexOf(currentBlock.color);
+        int colorInt = currentBlock.color; 
+        // the block has only one color and the different parts aren't colored themselfes
         for(BlockPart part : block.parts)
         {
             field[currentBlock.y+part.y][currentBlock.x+part.x] = colorInt;
         }
     }
 
-    private void Score(int lines) 
+    private void Score(int lines) // Add points to the score
     {
         int lineMultiplier = 0;
         
+        // original tetris point-system for line clears
         switch(lines)
         {
             case 1:
@@ -287,33 +311,35 @@ public class Model {
                 lineMultiplier = 1200;
                 break;
         }
-        score += lineMultiplier*(level+1);
+        score += lineMultiplier*(level+1); 
         scoresChanged = true;
     }
     
-    public void BlockFalling(boolean fall)
+    public void BlockFalling(boolean fall) // make the block fall faster
     {
         if(fall)
         {
             blockFalling = true;
-            timeAmplifier = 10;
+            timeAmplifier = 10; // speed the main loop up a bit
         }
         else
         {
             blockFalling = false;
-            timeAmplifier = 1;
+            timeAmplifier = 1; // return to normal speed
         }
     }
 
-    private void ChangeLevel(int lines) {
-        
-        level = (int) (Math.floor(lines/10)+1);
+    private void ChangeLevel(int lines) 
+    // This system is my own and is therefore different from other tetris versions
+    {
+        // startLevel is usually 1 but the model would support a game starting at higher levels
+        level = (int) (Math.floor(lines/10)+1)+(startLevel-1);
         
         // Change the speed
-        sleepTime = (int) (startSleepTime * Math.pow(speedValue, level-1));
+        sleepTime = (int) Math.round(startSleepTime * Math.pow(speedValue, level-1));
     }
     
-    public void ColorField(int[][] matrix, int color)
+    public void ColorField(int[][] matrix, int color) // change the color of every used square in the field
     {
         for (int y = 0; y < matrix.length; y++) {
             for (int x = 0; x < matrix[y].length; x++) {

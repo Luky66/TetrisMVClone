@@ -10,13 +10,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.input.KeyCode;
 import javax.swing.JFrame;
 
 public class Controller implements KeyListener{
     
-    // Frame
-    private int applicationBorder = 20;
+    private final int applicationBorder;
+    private final int squareSize; // The size of the squares of the blocks and the field
+    // The border between the different fields displayed by the three views
     
     // Model
     private Model model;
@@ -26,21 +26,33 @@ public class Controller implements KeyListener{
     private NextBlockPreview nextBlockPreview;
     private ScoreView scoreView;
     
+    // all the colors
+    public static final Color[] colors = 
+    {
+        Color.white,
+        Color.black,
+        Color.cyan,
+        Color.blue,
+        Color.orange,
+        Color.yellow,
+        Color.green,
+        Color.magenta,
+        Color.red
+    };
+    
     // Frame
     private JFrame frame;
     
     boolean gameRunning = true;
     
+    
+    // The consturctor
     public Controller()
     {
-        model = new Model(0); // We start at level 0
-        
-        
         // Initiate frame
         JFrame frame = new JFrame("Tetris MVClone");
-        
-        
-        frame.addKeyListener(this);    
+        frame.addKeyListener(this);   
+       
         
         // unsure about that
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -51,29 +63,26 @@ public class Controller implements KeyListener{
             }
         });
         
+        model = new Model(1); // We start at level 1
+        
+        this.applicationBorder = 15; // set the application border
+        this.squareSize = 30; // In pixels
+        
         //view = new View(frame, model.fieldHeight, model.fieldSpawnArea, model.fieldWidth); // Call the controller
-        playFieldView = new PlayFieldView(model.fieldHeight, model.fieldSpawnArea, model.fieldWidth);
+        playFieldView = new PlayFieldView(model.fieldHeight, model.fieldSpawnArea, model.fieldWidth, applicationBorder, squareSize, colors);
         frame.add(playFieldView);
-        nextBlockPreview = new NextBlockPreview(playFieldView.getWidth()+2*20, 20);
+        nextBlockPreview = new NextBlockPreview(playFieldView.getWidth()+2*applicationBorder, applicationBorder, squareSize, colors);
         frame.add(nextBlockPreview);
-        scoreView = new ScoreView(playFieldView.getWidth()+2*20, nextBlockPreview.getHeight()+2*20, nextBlockPreview.getWidth(), playFieldView.getHeight()-applicationBorder-nextBlockPreview.getHeight());
+        scoreView = new ScoreView(playFieldView.getWidth()+2*applicationBorder, nextBlockPreview.getHeight()+2*applicationBorder, nextBlockPreview.getWidth(), playFieldView.getHeight()-applicationBorder-nextBlockPreview.getHeight());
         frame.add(scoreView);
-        
-        // Set variables from model to view
-        playFieldView.field = model.field; // set the starting field
-        playFieldView.currentBlock = model.currentBlock;
-        nextBlockPreview.nextBlock = model.nextBlock;
-        scoreView.score = model.score;
-        
-        //view.nextBlock = model.nextBlock;
+
         
         
         
         // set the size
-        frame.setSize(playFieldView.getWidth()+nextBlockPreview.getWidth()+3*applicationBorder, playFieldView.getHeight()+3*applicationBorder);
+        frame.setSize(playFieldView.getWidth()+nextBlockPreview.getWidth()+3*applicationBorder+6, playFieldView.getHeight()+2*applicationBorder+23+6);
         frame.setResizable(false);
         
-        //frame.pack();
         frame.setLayout(null);
         frame.setVisible(true);
         
@@ -84,11 +93,12 @@ public class Controller implements KeyListener{
         // Main Game Loop
         while(gameRunning)
         {
-            
-            
             // Check for stuff
             model.CheckForDownwardsCollision();
             model.CheckForClear();
+
+            // move the block down...
+            model.Gravity();
             
             // check for gameover
             if(model.CheckForGameOver())
@@ -97,9 +107,6 @@ public class Controller implements KeyListener{
                 Update();
                 break;
             }
-            
-            // move the block down...
-            model.Gravity();
             
             // update everything and sync model and view
             Update();
@@ -151,7 +158,7 @@ public class Controller implements KeyListener{
         gameRunning = false;
         
         model.currentBlock = null;
-        model.nextBlock.color = Color.black;
+        model.nextBlock.color = 1; // make it black
         
         model.ColorField(model.field, 1);
         playFieldView.ShowGameOver();

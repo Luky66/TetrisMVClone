@@ -2,36 +2,41 @@
 package tetrismvclone;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import tetrismvclone.blocks.Block;
 import tetrismvclone.blocks.BlockPart;
-import tetrismvclone.blocks.Blocks;
 
+// This is a view
 
 public class PlayFieldView extends JPanel{
     
-    private final int squareSize = 30; // In pixels
+    
     private int rows;
     private int cols;
     private int blockedArea;
     
-    int[][] field;
-    Block currentBlock;
+    public int[][] field;
+    public Block currentBlock; // the current block is drawn in this view along with the field
     
     // draw
-    Color backgroundColor = Color.gray;
+    private Color[] colorPallete;
+    private Color backgroundColor = Color.gray;
+    private int squareSize;
     
     // GameOver stuff
     private JLabel gameOverLabel = new JLabel("Game Over!");
     
-    public PlayFieldView(int rows, int blockedArea, int cols)
+    public PlayFieldView(int rows, int blockedArea, int cols, int appBorder, int squareSize, Color[] colors)
     {
-        this.setBounds(20, 20, squareSize*cols+1, squareSize*(rows-blockedArea)+1);
+        this.setBounds(appBorder, appBorder, squareSize*cols+1, squareSize*(rows-blockedArea)+1);
         this.setBackground(backgroundColor);
+        
+        this.squareSize = squareSize;
+        
+        this.colorPallete = colors;
         
         this.rows = rows;
         this.cols = cols;
@@ -63,7 +68,7 @@ public class PlayFieldView extends JPanel{
             for (int x = 0; x < cols; x++) {
                 if(field[y][x] != 0) // if not transparent at position
                 {
-                    DrawSquare(g, x, y-blockedArea, Blocks.colors[field[y][x]]);
+                    DrawSquare(g, x, y-blockedArea, colorPallete[field[y][x]]);
                 }
             }
         }
@@ -74,7 +79,7 @@ public class PlayFieldView extends JPanel{
             for (BlockPart part : currentBlock.parts) {
                 if(part.y+currentBlock.y >= 2)
                 {
-                    DrawSquare(g, part.x+currentBlock.x, part.y+currentBlock.y-blockedArea, currentBlock.color);
+                    DrawSquare(g, part.x+currentBlock.x, part.y+currentBlock.y-blockedArea, colorPallete[currentBlock.color]);
                 }
             }
         }

@@ -9,6 +9,7 @@ import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+// This is a view
 
 public class ScoreView extends JPanel{
     

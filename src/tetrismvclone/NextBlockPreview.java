@@ -7,20 +7,26 @@ import javax.swing.JPanel;
 import tetrismvclone.blocks.Block;
 import tetrismvclone.blocks.BlockPart;
 
+// this is a view
 
 public class NextBlockPreview extends JPanel{
     
-    private final int squareSize = 30; // In pixels
+    private int squareSize;
     
     public Block nextBlock;
     
     // draw
+    Color[] colorPalette;
     Color backgroundColor = Color.gray;
     
-    public NextBlockPreview(int x, int y)
+    public NextBlockPreview(int x, int y, int squareSize, Color[] colors)
     {
         this.setBounds(x, y, squareSize*4 + 2*20, squareSize*2+2*20);
         this.setBackground(backgroundColor);
+        
+        this.squareSize = squareSize;
+        
+        this.colorPalette = colors;
     }
     
     
@@ -39,7 +45,7 @@ public class NextBlockPreview extends JPanel{
         
         for (BlockPart part : nextBlock.parts) {
             
-            DrawSquare(g, part.x-nextBlock.offsetX, part.y-nextBlock.offsetY, nextBlock.color, xOff, yOff);
+            DrawSquare(g, part.x-nextBlock.offsetX, part.y-nextBlock.offsetY, colorPalette[nextBlock.color], xOff, yOff);
         }
     }
     
