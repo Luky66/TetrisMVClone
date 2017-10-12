@@ -13,7 +13,7 @@ Then you can start going at it.
 Yes. I just want to point out that I am not going to update this project at any time. I would like to keep the project as submitted. 
 The only thing I might add is an executable.
 
-### Possible Improvements
+## Possible Improvements
 One of the most requested feature for this project after it's completion was music - the original Tetris music everyone knows.
 If not, shame on you! Here you go -> [Tetris music](https://youtu.be/NmCCQxVBfyM)
 
